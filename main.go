@@ -13,6 +13,11 @@ type cliCommand struct {
 	callback    func() error
 }
 
+type config struct {
+	nextUrl string
+	prevUrl string
+}
+
 var commands map[string]cliCommand
 
 func main() {
@@ -30,7 +35,7 @@ func main() {
 		input := scanner.Text()
 		command, ok := commands[input]
 		if !ok {
-			fmt.Println("Invalid command. See 'help' for valid commands.")
+			fmt.Println("Unknown command. See 'help' for valid commands.")
 			continue
 		}
 
@@ -41,36 +46,4 @@ func main() {
 
 		// fmt.Printf("Your input is: %s\n", scanner.Text())
 	}
-}
-
-func getCommands() map[string]cliCommand {
-	return map[string]cliCommand{
-		"help": {
-			name:        "help",
-			description: "Displays a help message",
-			callback:    commandHelp,
-		},
-		"exit": {
-			name:        "exit",
-			description: "Exit the Pokedex",
-			callback:    commandExit,
-		},
-	}
-}
-
-func commandHelp() error {
-	fmt.Println("\nWelcome to the Pokedex!")
-	fmt.Println("Usage: \n")
-
-	for key, value := range commands {
-		fmt.Printf("%s: %s\n", key, value.description)
-	}
-
-	return nil
-}
-
-func commandExit() error {
-	fmt.Println("Exiting Pokedex...\n")
-	os.Exit(0)
-	return nil
 }
