@@ -21,8 +21,13 @@ type config struct {
 var commands map[string]cliCommand
 
 func main() {
+	c := &config{
+		nextUrl: "https://pokeapi.co/api/v2/location-area?offset=0&limit=20",
+		prevUrl: "",
+	}
+
 	scanner := bufio.NewScanner(os.Stdin)
-	commands = getCommands()
+	commands = c.getCommands()
 
 	for {
 		fmt.Print("\nPokedex > ")
