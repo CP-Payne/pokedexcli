@@ -5,16 +5,11 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/CP-Payne/pokedexcli/internal/pokecache"
 )
-
-type cliCommand struct {
-	name        string
-	description string
-	callback    func() error
-}
 
 type Config struct {
 	NextUrl string
@@ -44,15 +39,19 @@ func main() {
 			log.Fatal(err)
 		}
 		input := scanner.Text()
-		command, ok := commands[input]
+		inputSlice := strings.Split(input, " ")
+		commandInput := inputSlice[0]
+		params := inputSlice[1:]
+
+		command, ok := commands[commandInput]
 		if !ok {
 			fmt.Println("Unknown command. See 'help' for valid commands.")
 			continue
 		}
 
-		err = command.callback()
+		err = command.callback(params...)
 		if err != nil {
-			fmt.Printf("Error executing %s command: %s", input, err)
+			fmt.Printf("Error executing %s command: %s", commandInput, err)
 		}
 
 		// fmt.Printf("Your input is: %s\n", scanner.Text())
