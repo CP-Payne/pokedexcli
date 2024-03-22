@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
+
+	"github.com/CP-Payne/pokedexcli/internal/pokecache"
 )
 
 type cliCommand struct {
@@ -13,17 +16,20 @@ type cliCommand struct {
 	callback    func() error
 }
 
-type config struct {
-	nextUrl string
-	prevUrl string
+type Config struct {
+	NextUrl string
+	PrevUrl string
+	Cache   *pokecache.Cache
 }
 
 var commands map[string]cliCommand
 
 func main() {
-	c := &config{
-		nextUrl: "https://pokeapi.co/api/v2/location-area?offset=0&limit=20",
-		prevUrl: "",
+	cache := pokecache.NewCache(5 * time.Minute)
+	c := &Config{
+		NextUrl: "https://pokeapi.co/api/v2/location-area?offset=0&limit=20",
+		PrevUrl: "",
+		Cache:   cache,
 	}
 
 	scanner := bufio.NewScanner(os.Stdin)

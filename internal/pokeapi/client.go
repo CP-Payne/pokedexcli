@@ -6,6 +6,8 @@ import (
 	"io"
 	"log"
 	"net/http"
+
+	"github.com/CP-Payne/pokedexcli/internal/pokecache"
 )
 
 type Location struct {
@@ -19,22 +21,29 @@ type LocationApiResponse struct {
 	Results  []Location
 }
 
-func GetLocations(url string) (previousUrl, nextUrl string) {
-	res, err := http.Get(url)
-	if err != nil {
-		log.Fatal(err)
-	}
-	body, err := io.ReadAll(res.Body)
-	res.Body.Close()
-	if res.StatusCode > 299 {
-		log.Fatalf("Response failed with status code: %d and\nbody: %s\n", res.StatusCode, body)
-	}
-	if err != nil {
-		log.Fatal(err)
+func GetLocations(url string, cache *pokecache.Cache) (previousUrl, nextUrl string) {
+	data, inCache := cache.Get(url)
+	if !inCache {
+		res, err := http.Get(url)
+		if err != nil {
+			log.Fatal(err)
+		}
+		data, err = io.ReadAll(res.Body)
+		res.Body.Close()
+		// data is the body of the response (json)
+		if res.StatusCode > 299 {
+			log.Fatalf("Response failed with status code: %d and\nbody: %s\n", res.StatusCode, data)
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		cache.Add(url, data)
+
 	}
 
 	var locationsResponse LocationApiResponse
-	if err := json.Unmarshal(body, &locationsResponse); err != nil {
+	if err := json.Unmarshal(data, &locationsResponse); err != nil {
 		log.Fatalf("Error unmarshaling JSON: %v", err)
 	}
 

@@ -8,25 +8,25 @@ import (
 	"github.com/CP-Payne/pokedexcli/internal/pokeapi"
 )
 
-func (c *config) mapn() error {
-	if c.nextUrl == "" {
+func (c *Config) mapn() error {
+	if c.NextUrl == "" {
 		fmt.Println("There are no more locations. Use 'mapb' command the view previous locations")
 		return errors.New("there are no more locations to view")
 	}
-	c.prevUrl, c.nextUrl = pokeapi.GetLocations(c.nextUrl)
+	c.PrevUrl, c.NextUrl = pokeapi.GetLocations(c.NextUrl, c.Cache)
 	return nil
 }
 
-func (c *config) mapb() error {
-	if c.prevUrl == "" {
+func (c *Config) mapb() error {
+	if c.PrevUrl == "" {
 		fmt.Println("There are no previous locations. Use 'map' command to view next locations")
 		return errors.New("no locations to navigate back to")
 	}
-	c.prevUrl, c.nextUrl = pokeapi.GetLocations(c.prevUrl)
+	c.PrevUrl, c.NextUrl = pokeapi.GetLocations(c.PrevUrl, c.Cache)
 	return nil
 }
 
-func (c *config) getCommands() map[string]cliCommand {
+func (c *Config) getCommands() map[string]cliCommand {
 	return map[string]cliCommand{
 		"help": {
 			name:        "help",
