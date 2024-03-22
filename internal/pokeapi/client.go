@@ -71,6 +71,7 @@ func GetLocations(url string, cache *pokecache.Cache) (previousUrl, nextUrl stri
 func PrintPokemons(locationName string, cache *pokecache.Cache) error {
 	locationDetailsUrl := fmt.Sprintf("https://pokeapi.co/api/v2/location-area/%s/", locationName)
 	// fmt.Println(locationDetailsUrl)
+	fmt.Printf("Exploring %s...\n", locationName)
 	data, inCache := cache.Get(locationDetailsUrl)
 	if !inCache {
 		res, err := http.Get(locationDetailsUrl)
