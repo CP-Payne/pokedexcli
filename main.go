@@ -8,13 +8,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/CP-Payne/pokedexcli/internal/pokeapi"
 	"github.com/CP-Payne/pokedexcli/internal/pokecache"
 )
 
 type Config struct {
-	NextUrl string
-	PrevUrl string
-	Cache   *pokecache.Cache
+	NextUrl  string
+	PrevUrl  string
+	Cache    *pokecache.Cache
+	Location *pokeapi.LocationPokemonApiResponse
 }
 
 var commands map[string]cliCommand
@@ -22,9 +24,10 @@ var commands map[string]cliCommand
 func main() {
 	cache := pokecache.NewCache(5 * time.Minute)
 	c := &Config{
-		NextUrl: "https://pokeapi.co/api/v2/location-area?offset=0&limit=20",
-		PrevUrl: "",
-		Cache:   cache,
+		NextUrl:  "https://pokeapi.co/api/v2/location-area?offset=0&limit=20",
+		PrevUrl:  "",
+		Cache:    cache,
+		Location: &pokeapi.LocationPokemonApiResponse{},
 	}
 
 	scanner := bufio.NewScanner(os.Stdin)

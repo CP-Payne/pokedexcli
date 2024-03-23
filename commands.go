@@ -87,7 +87,8 @@ func (c *Config) explore(params ...string) error {
 		return errors.New("can only explore one location at a time")
 	}
 
-	err := pokeapi.PrintPokemons(params[0], c.Cache)
+	var err error
+	c.Location, err = pokeapi.LocationPokemons(params[0], c.Cache)
 	if err != nil {
 		return err
 	}

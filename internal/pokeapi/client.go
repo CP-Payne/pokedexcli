@@ -22,7 +22,8 @@ type LocationApiResponse struct {
 	Results  []Location
 }
 
-type LocationDetailsApiResponse struct {
+type LocationPokemonApiResponse struct {
+	Location          Location            `json:"location"`
 	PokemonEncounters []PokemonEncounters `json:"pokemon_encounters"`
 }
 
@@ -68,7 +69,7 @@ func GetLocations(url string, cache *pokecache.Cache) (previousUrl, nextUrl stri
 	return locationsResponse.Previous, locationsResponse.Next
 }
 
-func PrintPokemons(locationName string, cache *pokecache.Cache) error {
+func LocationPokemons(locationName string, cache *pokecache.Cache) (locationPokemons *LocationPokemonApiResponse, err error) {
 	locationDetailsUrl := fmt.Sprintf("https://pokeapi.co/api/v2/location-area/%s/", locationName)
 	// fmt.Println(locationDetailsUrl)
 	fmt.Printf("Exploring %s...\n", locationName)
@@ -84,7 +85,7 @@ func PrintPokemons(locationName string, cache *pokecache.Cache) error {
 		// data is the body of the response (json)
 		if res.StatusCode > 299 {
 			// log.Fatalf("Response failed with status code: %d and\nbody: %s\n", res.StatusCode, data)
-			return errors.New("location not found")
+			return &LocationPokemonApiResponse{}, errors.New("location not found")
 		}
 		if err != nil {
 			log.Fatal(err)
@@ -94,15 +95,17 @@ func PrintPokemons(locationName string, cache *pokecache.Cache) error {
 
 	}
 
-	var locationDetailsResponse LocationDetailsApiResponse
-	if err := json.Unmarshal(data, &locationDetailsResponse); err != nil {
+	var locationPokemon LocationPokemonApiResponse
+	if err := json.Unmarshal(data, &locationPokemon); err != nil {
 		log.Fatalf("Error unmarshaling JSON: %v", err)
 	}
 
-	fmt.Printf("Found %d Pokemon:\n", len(locationDetailsResponse.PokemonEncounters))
+	// fmt.Printf("Current location %s", locationPokemonResponse.Location.Name)
 
-	for _, encounter := range locationDetailsResponse.PokemonEncounters {
+	fmt.Printf("Found %d Pokemon:\n", len(locationPokemon.PokemonEncounters))
+
+	for _, encounter := range locationPokemon.PokemonEncounters {
 		fmt.Printf("- %s\n", encounter.Pokemon.Name)
 	}
-	return nil
+	return &locationPokemon, nil
 }
