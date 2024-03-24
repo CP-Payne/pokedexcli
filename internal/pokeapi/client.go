@@ -46,7 +46,7 @@ type PokemonDetails struct {
 	Name           string  `json:"name"`
 	Height         int     `json:"height"`
 	Weight         int     `json:"weight"`
-	Stats          []Stat  `json:"stats"`
+	Stats          []Stats `json:"stats"`
 	Types          []Types `json:"types"`
 }
 
