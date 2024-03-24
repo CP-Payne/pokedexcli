@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/CP-Payne/pokedexcli/internal/pokecache"
+	"github.com/CP-Payne/pokedexcli/internal/utils"
 )
 
 type Location struct {
@@ -37,7 +38,7 @@ type Pokemon struct {
 }
 
 type Pokedex struct {
-	pokedex map[string]PokemonDetails
+	Pokedex map[string]PokemonDetails
 }
 
 type PokemonDetails struct {
@@ -157,7 +158,7 @@ func CatchPokemon(pokemonName string, cache *pokecache.Cache, pokedex *Pokedex, 
 		return errors.New("pokemon not found in area")
 	}
 
-	fmt.Printf("Catching pokemon %s....", pokemonName)
+	// fmt.Printf("Catching pokemon %s....", pokemonName)
 	pokemonDetailsUrl := fmt.Sprintf("https://pokeapi.co/api/v2/pokemon/%s/", pokemonName)
 	fmt.Printf("Throwing a Pokeball at %s...\n", pokemonName)
 
@@ -188,13 +189,15 @@ func CatchPokemon(pokemonName string, cache *pokecache.Cache, pokedex *Pokedex, 
 		log.Fatalf("Error unmarshaling JSON: %v", err)
 	}
 
-	// fmt.Printf("Current location %s", locationPokemonResponse.Location.Name)
+	// Attempting to catch pokemon
+	catchStatus := utils.CatchStatus(pokemonDetails.BaseExperience)
 
-	fmt.Printf("UNMARSHEL TEST %d Pokemon:\n", pokemonDetails.BaseExperience)
-	//
-	// for _, encounter := range locationPokemon.PokemonEncounters {
-	// 	fmt.Printf("- %s\n", encounter.Pokemon.Name)
-	// }
-	// return &locationPokemon, nil
+	if catchStatus {
+		pokedex.Pokedex[pokemonDetails.Name] = pokemonDetails
+		fmt.Printf("%s was caught!\n", pokemonDetails.Name)
+	} else {
+		fmt.Printf("%s escaped!\n", pokemonDetails.Name)
+	}
+
 	return nil
 }

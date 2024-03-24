@@ -29,6 +29,9 @@ func main() {
 		PrevUrl:  "",
 		Cache:    cache,
 		Location: &pokeapi.LocationPokemonApiResponse{},
+		Pokedex: &pokeapi.Pokedex{
+			Pokedex: make(map[string]pokeapi.PokemonDetails),
+		},
 	}
 
 	scanner := bufio.NewScanner(os.Stdin)
