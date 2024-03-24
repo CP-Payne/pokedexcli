@@ -195,6 +195,8 @@ func CatchPokemon(pokemonName string, cache *pokecache.Cache, pokedex *Pokedex, 
 	if catchStatus {
 		pokedex.Pokedex[pokemonDetails.Name] = pokemonDetails
 		fmt.Printf("%s was caught!\n", pokemonDetails.Name)
+
+		fmt.Println("You may now inspect it with the inspect command.")
 	} else {
 		fmt.Printf("%s escaped!\n", pokemonDetails.Name)
 	}

@@ -51,6 +51,11 @@ func (c *Config) getCommands() map[string]cliCommand {
 			description: "Inspect a pokemon.",
 			callback:    c.inspect,
 		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "List pokemons in pokedex.",
+			callback:    c.viewPokedex,
+		},
 	}
 }
 
@@ -132,7 +137,7 @@ func (c *Config) inspect(params ...string) error {
 
 	fmt.Printf("Name: %v\n", pokemonInfo.Name)
 	fmt.Printf("Height: %d\n", pokemonInfo.Height)
-	fmt.Printf("Height: %d\n", pokemonInfo.Height)
+	fmt.Printf("Weight: %d\n", pokemonInfo.Weight)
 	fmt.Println("Stats:")
 	for _, stat := range pokemonInfo.Stats {
 		fmt.Printf("  -%s: %d\n", stat.Stat.Name, stat.BaseStat)
@@ -140,6 +145,16 @@ func (c *Config) inspect(params ...string) error {
 	fmt.Println("Types:")
 	for _, pokemonType := range pokemonInfo.Types {
 		fmt.Printf("  -%s\n", pokemonType.Type.Name)
+	}
+	return nil
+}
+
+func (c *Config) viewPokedex(params ...string) error {
+	if len(c.Pokedex.Pokedex) == 0 {
+		return errors.New("no pokemons found in pokedex")
+	}
+	for key := range c.Pokedex.Pokedex {
+		fmt.Printf("  - %s\n", key)
 	}
 	return nil
 }

@@ -66,7 +66,8 @@ func main() {
 
 		err = command.callback(params...)
 		if err != nil {
-			fmt.Printf("Error executing %s command: %s\n", commandInput, err)
+			// fmt.Printf("Error executing %s command: %s\n", commandInput, err)
+			fmt.Printf("%s\n", err)
 		}
 	}
 
