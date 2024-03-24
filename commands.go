@@ -41,6 +41,11 @@ func (c *Config) getCommands() map[string]cliCommand {
 			description: "Obtain a list of pokemons in an area.",
 			callback:    c.explore,
 		},
+		"catch": {
+			name:        "catch",
+			description: "Catch a pokemon.",
+			callback:    c.catch,
+		},
 	}
 }
 
@@ -89,6 +94,23 @@ func (c *Config) explore(params ...string) error {
 
 	var err error
 	c.Location, err = pokeapi.LocationPokemons(params[0], c.Cache)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Config) catch(params ...string) error {
+	if len(params) == 0 {
+		return errors.New("Provide pokemon name to catch")
+	}
+	if len(params) > 1 {
+		return errors.New("can only catch one pokemon at a time")
+	}
+
+	var err error
+	err = pokeapi.CatchPokemon(params[0], c.Cache, c.Pokedex, c.Location)
 	if err != nil {
 		return err
 	}

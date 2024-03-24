@@ -17,6 +17,7 @@ type Config struct {
 	PrevUrl  string
 	Cache    *pokecache.Cache
 	Location *pokeapi.LocationPokemonApiResponse
+	Pokedex  *pokeapi.Pokedex
 }
 
 var commands map[string]cliCommand

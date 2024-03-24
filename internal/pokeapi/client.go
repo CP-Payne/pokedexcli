@@ -36,6 +36,40 @@ type Pokemon struct {
 	Url  string `json:"url"`
 }
 
+type Pokedex struct {
+	pokedex map[string]PokemonDetails
+}
+
+type PokemonDetails struct {
+	BaseExperience int     `json:"base_experience"`
+	Name           string  `json:"name"`
+	Height         int     `json:"height"`
+	Weight         int     `json:"weight"`
+	Stats          []Stat  `json:"stats"`
+	Types          []Types `json:"types"`
+}
+
+type Types struct {
+	Slot int  `json:"slot"`
+	Type Type `json:"type"`
+}
+
+type Type struct {
+	Name string `json:"name"`
+	Url  string `json:"url"`
+}
+
+type Stats struct {
+	BaseStat int  `json:"base_stat"`
+	Effort   int  `json:"effort"`
+	Stat     Stat `json:"stat"`
+}
+
+type Stat struct {
+	Name string `json:"name"`
+	URL  string `json:"url"`
+}
+
 func GetLocations(url string, cache *pokecache.Cache) (previousUrl, nextUrl string) {
 	data, inCache := cache.Get(url)
 	if !inCache {
@@ -108,4 +142,59 @@ func LocationPokemons(locationName string, cache *pokecache.Cache) (locationPoke
 		fmt.Printf("- %s\n", encounter.Pokemon.Name)
 	}
 	return &locationPokemon, nil
+}
+
+func CatchPokemon(pokemonName string, cache *pokecache.Cache, pokedex *Pokedex, location *LocationPokemonApiResponse) (err error) {
+	pokemonInArea := false
+	for _, encounter := range location.PokemonEncounters {
+		if pokemonName == encounter.Pokemon.Name {
+			pokemonInArea = true
+			break
+		}
+	}
+
+	if !pokemonInArea {
+		return errors.New("pokemon not found in area")
+	}
+
+	fmt.Printf("Catching pokemon %s....", pokemonName)
+	pokemonDetailsUrl := fmt.Sprintf("https://pokeapi.co/api/v2/pokemon/%s/", pokemonName)
+	fmt.Printf("Throwing a Pokeball at %s...\n", pokemonName)
+
+	data, inCache := cache.Get(pokemonDetailsUrl)
+	if !inCache {
+		res, err := http.Get(pokemonDetailsUrl)
+		if err != nil {
+			log.Fatal(err)
+		}
+		data, err = io.ReadAll(res.Body)
+		// fmt.Println(string(data))
+		res.Body.Close()
+		// data is the body of the response (json)
+		if res.StatusCode > 299 {
+			// log.Fatalf("Response failed with status code: %d and\nbody: %s\n", res.StatusCode, data)
+			return errors.New("location not found")
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		cache.Add(pokemonDetailsUrl, data)
+
+	}
+
+	var pokemonDetails PokemonDetails
+	if err := json.Unmarshal(data, &pokemonDetails); err != nil {
+		log.Fatalf("Error unmarshaling JSON: %v", err)
+	}
+
+	// fmt.Printf("Current location %s", locationPokemonResponse.Location.Name)
+
+	fmt.Printf("UNMARSHEL TEST %d Pokemon:\n", pokemonDetails.BaseExperience)
+	//
+	// for _, encounter := range locationPokemon.PokemonEncounters {
+	// 	fmt.Printf("- %s\n", encounter.Pokemon.Name)
+	// }
+	// return &locationPokemon, nil
+	return nil
 }
